@@ -1,0 +1,20 @@
+<div class="agm-container">
+  <agm-map
+    [zoom]="4"
+    [latitude]="lat"
+    [longitude]="lng"
+    (mapReady)="onMapReady($event)">
+    <agm-polygon [paths]="paths"></agm-polygon>
+  </agm-map>
+  <br />
+  <div class="display-flex">
+    <button mat-stroked-button color="warn" (click)="deleteSelectedShape()">Clear</button>
+  </div>
+
+  <mat-list role="list">
+    <mat-list-item role="listitem" *ngFor="let point of pointList">
+      {{ point.lat.toPrecision(5) }},
+      {{ point.lng.toPrecision(5) }}</mat-list-item
+    >
+  </mat-list>
+</div>
