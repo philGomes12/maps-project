@@ -9,11 +9,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { StorePolygonsService } from './core/storeLatLng.service';
 
+import { HttpClientModule } from '@angular/common/http';
+
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAZBbrLPN7KatMqF_GIYtQ1uHYrsqv5Va4',
@@ -25,7 +29,7 @@ import { StorePolygonsService } from './core/storeLatLng.service';
     MatCardModule,
     MatChipsModule
   ],
-  providers: [StorePolygonsService],
+  providers: [HttpClientModule, StorePolygonsService],
   bootstrap: [AppComponent],
   schemas:  [ CUSTOM_ELEMENTS_SCHEMA ]
 })

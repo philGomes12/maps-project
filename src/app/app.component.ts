@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StorePolygonsService } from './core/storeLatLng.service';
-
+import { HttpClient } from '@angular/common/http'
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -99,6 +99,7 @@ export class AppComponent implements OnInit {
         this.lng = position.coords.longitude;
       });
     }
+
   }
 
   deleteSelectedShape() {
@@ -114,6 +115,22 @@ export class AppComponent implements OnInit {
         drawingControl: true,
       });
     }
+  }
+
+  savePintList(){
+    console.log(this.pointList);  
+
+    const resp ={
+      id : 3,
+      polygons : [this.pointList]
+    }
+    
+    
+    this.storePolygonsService.savePolygons(resp).subscribe(polygons =>{
+
+    },err =>{
+      console.log("Erro: ", err)
+    })
   }
 
   updatePointList(path) {
