@@ -6,17 +6,20 @@ import { HttpClient } from "@angular/common/http";
 export class StorePolygonsService{
   constructor(private http: HttpClient){}
 
-  public setStorePolygon(polygons){
-    localStorage.setItem('polygon', JSON.stringify(polygons))
-
-    return true
+  savePolygons(id: any, polygons: any): Observable<any>{
+    localStorage.setItem('id', id)
+    return this.http.post('http://localhost:3000/api', polygons )
   }
 
-  savePolygons(poligons): Observable<any>{
-    return this.http.post('http://localhost:3000/api', poligons )
+  getPolygonsById(id: any){
+    return this.http.get(`http://localhost:3000/api/${id}`)
   }
 
-  count(){
-    return this.http.get('http://localhost:3000/api')
+  updatePolygon(id: any, polygons){
+    return this.http.put(`http://localhost:3000/api/${id}`, polygons)
+  }
+
+  deletePolygon(id: any){
+    return this.http.delete(`http://localhost:3000/api/${id}`)
   }
 }

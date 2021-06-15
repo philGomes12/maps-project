@@ -7,14 +7,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatInputModule } from '@angular/material/input'
 import { StorePolygonsService } from './core/storeLatLng.service';
 
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { DialogBodyComponent } from './dialog-body/dialog-body.component';
+
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    DialogBodyComponent,
   ],
   imports: [
     HttpClientModule,
@@ -24,13 +31,19 @@ import { HttpClientModule } from '@angular/common/http';
       libraries: ['places', 'drawing', 'geometry']
     }),
     BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatListModule,
     MatCardModule,
-    MatChipsModule
+    MatChipsModule,
+    MatInputModule,
+    MatIconModule,
+    MatDialogModule
   ],
   providers: [HttpClientModule, StorePolygonsService],
   bootstrap: [AppComponent],
+  entryComponents: [DialogBodyComponent],
   schemas:  [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class AppModule { }

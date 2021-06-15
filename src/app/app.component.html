@@ -1,21 +1,69 @@
-<div class="agm-container">
-  <agm-map
-    [zoom]="4"
-    [latitude]="lat"
-    [longitude]="lng"
-    (mapReady)="onMapReady($event)">
-    <agm-polygon [paths]="paths"></agm-polygon>
-  </agm-map>
-  <br />
-  <div class="display-flex">
-    <button mat-stroked-button color="warn" (click)="deleteSelectedShape()">Clear</button>
-    <button mat-stroked-button color="primary" (click)="savePintList()">Save</button>
+<div class="container">
+  <div class="row">
+    <div class="col-8">
+      <agm-map
+        [zoom]="3"
+        [latitude]="lat"
+        [longitude]="lng"
+        (mapReady)="onMapReady($event)">
+        <agm-polygon [paths]="paths"></agm-polygon>
+      </agm-map>
+    </div>
+    <div class="col-4" *ngIf="pointList.length > 0">
+      <mat-card class="example-card">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>Added polygon(s)</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list role="list">
+            <mat-list-item role="listitem" *ngFor="let point of pointList">
+              {{ point.lat.toPrecision(5) }},
+              {{ point.lng.toPrecision(5) }}</mat-list-item
+            >
+          </mat-list>
+        </mat-card-content>
+        <mat-card-actions>
+          <div class="container">
+            <div class="row">
+              <div class="col-3">
+                <button mat-raised-button color="accent" (click)="savePintList()">Save</button>
+              </div>
+              <div class="col-6">
+                <button mat-fab color="warn"  (click)="deleteSelectedShape()" aria-label="Example icon button with a delete icon">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
-
-  <mat-list role="list">
-    <mat-list-item role="listitem" *ngFor="let point of pointList">
-      {{ point.lat.toPrecision(5) }},
-      {{ point.lng.toPrecision(5) }}</mat-list-item
-    >
-  </mat-list>
+</div>
+<div class="agm-container">
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        <form class="example-form">
+          <mat-form-field class="example-full-width">
+            <mat-label>ID</mat-label>
+            <input type="email" matInput [formControl]="idForm" [errorStateMatcher]="matcher" placeholder="Ex. 1">
+            <mat-error *ngIf="idForm.hasError('required')">
+              Please, enter an ID
+            </mat-error>
+          </mat-form-field>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-1">
+        <button mat-raised-button color="primary" (click)="findList()">Find</button>
+      </div>
+      <div class="col-6"></div>
+      <div class="col-1" *ngIf="paths">
+        <button mat-raised-button color="warn" (click)="deletePolygon()">delete</button>
+      </div>
+    </div>
+  </div>
 </div>

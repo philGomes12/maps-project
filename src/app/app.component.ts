@@ -1,6 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { StorePolygonsService } from './core/storeLatLng.service';
-import { HttpClient } from '@angular/common/http'
+import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogBodyComponent } from './dialog-body/dialog-body.component';
+
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -10,24 +20,37 @@ export class AppComponent implements OnInit {
   title = 'TESTE'
   lat = 20.5937;
   lng = 78.9629;
+  map: any
   pointList: any[] = [];
   drawingManager: any;
   selectedShape: any;
   selectedArea = 0;
   paths: any[][] = []
+  id: any;
 
-  constructor(private storePolygonsService: StorePolygonsService) {}
+  idForm = new FormControl('', [
+    Validators.required
+  ]);
+
+  matcher = new MyErrorStateMatcher();
+
+  constructor(private storePolygonsService: StorePolygonsService, private matDialog: MatDialog) {}
+
+
+  openDialog() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = "some data";
+    let dialogRef = this.matDialog.open(DialogBodyComponent, dialogConfig);
+  }
 
   ngOnInit() {
     this.paths = [];
     this.setCurrentPosition();
+    localStorage.setItem('isLoad', '')
   }
 
   onMapReady(map) {
-    let x = JSON.parse(localStorage.getItem('polygon'))
-    if(x !== '' || x !== null || x !== undefined){
-      this.paths = x;
-    }
+    this.map = map;
     this.initDrawingManager(map);
   }
 
@@ -92,6 +115,7 @@ export class AppComponent implements OnInit {
       }
     );
   }
+
   private setCurrentPosition() {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -102,39 +126,73 @@ export class AppComponent implements OnInit {
 
   }
 
+
   deleteSelectedShape() {
     this.pointList = [];
     this.paths = [];
-    localStorage.clear()
+    localStorage.setItem('isLoad', '')
+    this.idForm.setValue('')
+    window.location.reload()
+    this.onMapReady(this.map)
     if (this.selectedShape) {
       this.selectedShape.setMap(null);
       this.selectedArea = 0;
-      this.pointList = [];
       // To show:
       this.drawingManager.setOptions({
-        drawingControl: true,
+        drawingControl: false,
       });
     }
   }
 
-  savePintList(){
-    console.log(this.pointList);  
-
-    const resp ={
-      id : 3,
-      polygons : [this.pointList]
-    }
-    
-    
-    this.storePolygonsService.savePolygons(resp).subscribe(polygons =>{
-
-    },err =>{
-      console.log("Erro: ", err)
+  deletePolygon(){
+    this.storePolygonsService.deletePolygon(this.idForm.value).subscribe(resp => {
+      this.deleteSelectedShape()
     })
   }
 
+  findList(){
+    if(this.idForm.valid){
+      this.storePolygonsService.getPolygonsById(this.idForm.value).subscribe(resp => {
+        console.log('1: ', resp)
+        this.paths = resp['polygons']
+        localStorage.setItem('isLoad', 'true')
+      })
+    }else{
+    }
+  }
+
+  savePintList(){
+    this.id = Number(localStorage.getItem('id'))
+    let isLoad = localStorage.getItem('isLoad')
+    if(!this.id){
+      this.id = 1
+    }else{
+      if(isLoad){
+        let id = this.idForm.value;
+        const polygons ={
+          id : id,
+          polygons : this.paths
+        }
+        this.storePolygonsService.updatePolygon(id, polygons).subscribe(resp => {
+          this.deleteSelectedShape();
+        })
+      }else{
+        this.id = this.id + 1;
+        const polygons ={
+          id : this.id,
+          polygons : this.paths
+        }
+        this.storePolygonsService.savePolygons(this.id, polygons).subscribe(polygons =>{
+          this.selectedShape.setMap(null);
+          this.deleteSelectedShape();
+        },err =>{
+          console.log("Erro: ", err)
+        })
+      }
+    }
+  }
+
   updatePointList(path) {
-    let x = JSON.parse(localStorage.getItem('polygon'))
     this.pointList = [];
     const len = path.getLength();
     for (let i = 0; i < len; i++) {
@@ -146,6 +204,5 @@ export class AppComponent implements OnInit {
       path
     );
     this.paths.push(this.pointList)
-    this.storePolygonsService.setStorePolygon(this.paths);
   }
 }
