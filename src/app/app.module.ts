@@ -27,7 +27,7 @@ import { DialogBodyComponent } from './dialog-body/dialog-body.component';
     HttpClientModule,
     BrowserModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyAZBbrLPN7KatMqF_GIYtQ1uHYrsqv5Va4',
+      apiKey: '',
       libraries: ['places', 'drawing', 'geometry']
     }),
     BrowserAnimationsModule,
